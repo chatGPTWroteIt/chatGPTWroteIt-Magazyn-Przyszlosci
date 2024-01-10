@@ -153,8 +153,32 @@ def calculate_shortest_path_weight(start_point, end_point):
     sum_of_weights = sum(shortest_path_weights)
     print(f"Sum of weights along the shortest path: {sum_of_weights}")
 
+def convert_package_id(tabPackageId):
+    vertex_list=[]
+    for index,string in enumerate(tabPackageId, start=1):
+        hall = string[1]
+        alley = string[3]
+        shelf = string[5:7]
 
+        if int(alley)%2 != 0:
+            if int(shelf) <= 8:
+                vertex_to_find = int(hall)*100 + int(alley)*10 + 1
+            else:
+                vertex_to_find = int(hall)*100 + int(alley)*10 + 2
+        else:
+            if int(shelf) <= 8:
+                vertex_to_find = int(hall)*100 + int(alley)*10 + 3
+            else:
+                vertex_to_find = int(hall)*100 + int(alley)*10 + 2
+        #print(vertex_to_find)
+        vertex_list.append(vertex_to_find)
+    
+    return vertex_list
+    
+    
 create_g()
 print(g)
 #print(g.es['weight'])
 calculate_shortest_path_weight("111","131")
+
+list = convert_package_id(["H102A02","H10309"])
