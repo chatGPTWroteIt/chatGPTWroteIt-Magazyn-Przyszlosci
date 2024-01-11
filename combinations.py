@@ -31,7 +31,6 @@ def is_optimal(a, supply, length):
             s += (key[i][1] * value)
             if( s > supply[key[i][0]]):
                 return False
-    
     return True
 
 def check_optimal(supply, combinations):
@@ -39,6 +38,8 @@ def check_optimal(supply, combinations):
         for j in range(0, len(combinations[i])):
             for key, value in combinations[i][j].items():
                if is_optimal(combinations[i][j], supply, len(supply.keys())) == False:
+                print("no_opt")
+
 
 
 def dicts_to_keys(dict_list):
@@ -49,6 +50,7 @@ def sum_internal(dick):
 
 def unpack_package_types(supply):
     package_types = {}
+    restrains = {}
     for x,y,count in supply:
         x, y = min(x,y), max(x,y)
         if x in package_types:
@@ -60,12 +62,14 @@ def unpack_package_types(supply):
             package_types[y] += count
         else:
             package_types[y] = count
-    restrains = {(x,y):count}
+        restrains.update({(x,y):count})
+
+    #print(package_types)
     return (package_types, restrains)
 
 
-def affordable_rows(supply, row_lenght):
-    #package = unpack_package_types(supply)
+def affordable_rows(packages, row_lenght):
+    supply, restrains = unpack_package_types(packages)
 
     row_types = unique_sizes_combinations(supply.keys(), row_lenght)
     row_types = dicts_to_keys(row_types)
@@ -88,9 +92,12 @@ def affordable_rows(supply, row_lenght):
 
 # a = affordable_rows({200:30, 300:40, 260:20},1200)
 b = {200:3, 300:2}
-a = affordable_rows(b,600)
+a = affordable_rows(((200, 300, 3), (300, 400, 2), (200, 100, 4)), 1200)
 
 print(a)
+
+print(len(b.keys()))
+check_optimal(b, a)
 
 # {200:30, 300:40, 260:20}
 
