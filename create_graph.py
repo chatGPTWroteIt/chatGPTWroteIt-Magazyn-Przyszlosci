@@ -150,7 +150,8 @@ def create_g():
 
 def calculate_shortest_path_weight(start_point, end_point):
     if start_point == end_point:
-        return 0
+        ret = 0
+        return int(ret),[start_point]
     
     shortest_path_indices = g.get_shortest_paths(g.vs.find(name=start_point), to=g.vs.find(name=end_point), output="vpath")[0]
     shortest_path_ids = [g.vs[idx]["name"] for idx in shortest_path_indices]
@@ -207,6 +208,7 @@ def travellingSalesmanProblem(list, s):
     min_path = maxsize
     route=[]
     next_permutation = permutations(vertex)
+    zm =""
     for i in next_permutation:
  
         #store current Path weight(cost)
@@ -216,15 +218,22 @@ def travellingSalesmanProblem(list, s):
         #compute current path weight 
         k = s
         shelf_prev=""
-        path_from_shelf_w = 0
         for j in i:
             ver, shelf = j
+            path_from_shelf_w = 0
             
+            if k!=ver and k!=s:
+                if (int(k[1]))%2 != 0:
+                    zm=str(int(k)+1)
+                else:
+                    zm=str(int(k)-1)
+            else: zm=k
+
             if k!=s:
                 if (int(k[1]))%2 != 0:
-                    path_weight,path_route = calculate_shortest_path_weight(str(int(k)+1), ver)
+                    path_weight,path_route = calculate_shortest_path_weight(zm, ver)
                 else:
-                    path_weight,path_route = calculate_shortest_path_weight(str(int(k)-1), ver)
+                    path_weight,path_route = calculate_shortest_path_weight(zm, ver)
             else:
                 path_weight,path_route = calculate_shortest_path_weight(k, ver)
             if shelf_prev != "":
@@ -253,9 +262,9 @@ def travellingSalesmanProblem(list, s):
                     path_from_shelf_w += (12 - (0.75 + ((int(shelf)-8-1)/2)*3 + 1.5) + 1.5)
             elif (int(ver[1])==2):
                 if int(shelf)<=8:
-                    path_from_shelf_w = (12- (1.5 +((int(shelf)-1)/2)*3 + 1.5) +0.75)
+                    path_from_shelf_w += (12- (1.5 +((int(shelf)-1)/2)*3 + 1.5) + 0.75)
                 else:
-                    path_from_shelf_w = (12- (1.5 +((int(shelf)-8-1)/2)*3 + 1.5) +0.75)
+                    path_from_shelf_w += (12- (1.5 +((int(shelf)-8-1)/2)*3 + 1.5) +0.75)
 
         ver, shelf = j
         if (int(k[1]))%2 != 0:
@@ -272,10 +281,11 @@ def travellingSalesmanProblem(list, s):
         if current_pathweight<min_path:
             min_path=current_pathweight
             route=curr_route
-    return (min_path,route)
+    return (route)
 
 
 def get_palette(package_list):
+    #iteracja po tablicach -> każdy poziom palety szukany oddzielnie
     packages_Idshelf = convert_package_id(package_list)
     route = travellingSalesmanProblem(packages_Idshelf,"100")
     print(route)
@@ -283,6 +293,6 @@ def get_palette(package_list):
     ################################### jak dalej palety?
     
 
-if __name__ == "__main__":
-    create_g()
-    get_palette(["H102A02","H103A09","H304A10","H202A14"])
+
+create_g()
+route_tour=get_palette(["H102A02","H103A09","H304A10","H202A14","H206A15","H404A03"])
