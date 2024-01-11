@@ -3,6 +3,8 @@ from PIL import ImageTk, Image, ImageDraw
 
 
 def draw_line(draw, start, end, color="red", width=2):
+    start = change_to_distance(start)
+    end = change_to_distance(end)
     draw.line([start, end], fill=color, width=width)
 
 
@@ -11,8 +13,10 @@ def draw_lines():
     drawn_plan = plan_file.copy()
     draw_li = ImageDraw.Draw(drawn_plan)
 
-    for i in range(line_iterator+1):
-        draw_line(draw_li, list_of_navigation[i][0], list_of_navigation[i][1])
+    for i in range(len(list_of_navigation[line_iterator])-1):
+        draw_line(draw_li, list_of_navigation[line_iterator][i], list_of_navigation[line_iterator][i+1])
+    x,y = change_to_distance(list_of_navigation[line_iterator][0])
+    worker_label.place(x=x-90, y=y-175)
 
     global warehouse_plan
     warehouse_plan = ImageTk.PhotoImage(drawn_plan.resize(
@@ -64,21 +68,26 @@ def on_button_reached():
 
 def on_button_packed():
     global line_iterator
-    worker_label.place(x=300+line_iterator, y=300+line_iterator)
     draw_lines()
 
+def change_to_distance(number):
+    x=(int(number[2])-1)*14.25 + int(number[0])%2 * 30 + 0.75
+    y=int(int(number[0])/2) * 32.2 + (int(number[1])-1)*4.6 + 0.65
+    if number == "500" or number == "100":
+        x = 53.25
+        if number =="500":
+            y = 56,85
+        else:
+            y = 24,65
+    return(x*11+60,y*11 + 85)
 
 line_iterator = 0
 palet_iterator = 0
 
-list_of_navigation = [[(200+line_iterator, 300+line_iterator), (400+line_iterator, 800+line_iterator)],
-                      [(400+line_iterator, 800+line_iterator),
-                       (400+line_iterator, 400+line_iterator)],
-                      [(400+line_iterator, 400+line_iterator), (100+line_iterator, 200+line_iterator)]]
+list_of_navigation = [["212", "222","232", "242","252", "262","261", "251"]]
 list_of_future_placing = [[(0+line_iterator, 0+line_iterator), (200+line_iterator, 100+line_iterator)],
-                          [(200+line_iterator, 100+line_iterator),
-                           (300+line_iterator, 400+line_iterator)],
-                          [(150+line_iterator, 250+line_iterator), (10+line_iterator, 20+line_iterator)]]
+                        [(200+line_iterator, 100+line_iterator), (300+line_iterator, 400+line_iterator)],
+                        [(150+line_iterator, 250+line_iterator), (10+line_iterator, 20+line_iterator)]]
 list_of_past_placing = []
 
 
