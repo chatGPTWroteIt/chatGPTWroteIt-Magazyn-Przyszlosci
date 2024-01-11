@@ -1,5 +1,6 @@
 from tkinter import *
 from PIL import ImageTk, Image, ImageDraw
+from create import route_tour
 
 
 def draw_line(draw, start, end, color="red", width=2):
@@ -16,7 +17,7 @@ def draw_lines():
     for i in range(len(list_of_navigation[line_iterator])-1):
         draw_line(draw_li, list_of_navigation[line_iterator][i], list_of_navigation[line_iterator][i+1])
     x,y = change_to_distance(list_of_navigation[line_iterator][0])
-    worker_label.place(x=x-90, y=y-175)
+    worker_label.place(x=x/1.68 - 0, y=y/1.65 + 10)
 
     global warehouse_plan
     warehouse_plan = ImageTk.PhotoImage(drawn_plan.resize(
@@ -76,15 +77,15 @@ def change_to_distance(number):
     if number == "500" or number == "100":
         x = 53.25
         if number =="500":
-            y = 56,85
+            y = 86.85
         else:
-            y = 24,65
+            y = 24.65
     return(x*11+60,y*11 + 85)
 
 line_iterator = 0
 palet_iterator = 0
 
-list_of_navigation = [["212", "222","232", "242","252", "262","261", "251"]]
+list_of_navigation = route_tour
 list_of_future_placing = [[(0+line_iterator, 0+line_iterator), (200+line_iterator, 100+line_iterator)],
                         [(200+line_iterator, 100+line_iterator), (300+line_iterator, 400+line_iterator)],
                         [(150+line_iterator, 250+line_iterator), (10+line_iterator, 20+line_iterator)]]
