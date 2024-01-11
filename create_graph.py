@@ -62,16 +62,13 @@ def create_g():
                             if j!=6 :
                                 #not into/in biuro or pkt odbioru
                                 if not((i+1)*100 + (j+2)*10 + (k+1) == (i+1)*100 + (j+2)*10 + 3 and (j+1)>=4):
-                                        #continue
                                     g.add_edge(str((i+1)*100 + (j+1)*10 + (k+1)), str((i+1)*100 + (j+2)*10 + (k+1)))
                                     weight.append(lenght[1])
                                 
                             #right
                             if (j+1)%2 != 0:
                                 if k!=2:
-                                    #potrzebne???????????????
                                     if not((i+1)*100 + (j+1)*10 + (k+2) == (i+1)*100 + (j+1)*10 + 3 and j>=4):
-                                        
                                         g.add_edge(str((i+1)*100 + (j+1)*10 + (k+1)), str((i+1)*100 + (j+1)*10 + (k+2)))
                                         weight.append(lenght[0])
                             #left    
@@ -162,11 +159,9 @@ def calculate_shortest_path_weight(start_point, end_point):
     shortest_path_weights = [g.es[g.get_eid(edge[0], edge[1])]["weight"] for edge in shortest_path_edges]
 
     shortest_path_string = " -> ".join(shortest_path_ids)
-    #print(f"The shortest path is: {shortest_path_string}")
 
     sum_of_weights = sum(shortest_path_weights)
 
-    #print(f"Sum of weights along the shortest path: {sum_of_weights}")
     return sum_of_weights,shortest_path_ids
 
 def convert_package_id(tabPackageId):
@@ -225,7 +220,13 @@ def travellingSalesmanProblem(list, s):
         for j in i:
             ver, shelf = j
             
-            path_weight,path_route = calculate_shortest_path_weight(k, ver)
+            if k!=s:
+                if (int(k[1]))%2 != 0:
+                    path_weight,path_route = calculate_shortest_path_weight(str(int(k)+1), ver)
+                else:
+                    path_weight,path_route = calculate_shortest_path_weight(str(int(k)-1), ver)
+            else:
+                path_weight,path_route = calculate_shortest_path_weight(k, ver)
             if shelf_prev != "":
                 path_route.insert(0, shelf_prev)
             
@@ -257,7 +258,11 @@ def travellingSalesmanProblem(list, s):
                     path_from_shelf_w = (12- (1.5 +((int(shelf)-8-1)/2)*3 + 1.5) +0.75)
 
         ver, shelf = j
-        path_weight,path_route = calculate_shortest_path_weight(ver,"500")
+        if (int(k[1]))%2 != 0:
+            path_weight,path_route = calculate_shortest_path_weight(str(int(ver)+1), "500")
+        else:
+            path_weight,path_route = calculate_shortest_path_weight(str(int(ver)-1), "500")
+
         path_route.insert(0, shelf_prev)
         current_pathweight += path_weight
         current_pathweight += path_from_shelf_w
@@ -277,15 +282,6 @@ def get_palette(package_list):
     return route
     ################################### jak dalej palety?
     
-#create_g()
-#print(g)
-# print(g.es['weight'])
-# calculate_shortest_path_weight("111","131")
-
-# list = convert_package_id(["H102A02","H103A09"])
-
-# for i in list:
-#     print(i)
 
 if __name__ == "__main__":
     create_g()
