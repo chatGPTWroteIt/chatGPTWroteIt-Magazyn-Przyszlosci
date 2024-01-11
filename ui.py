@@ -28,42 +28,48 @@ def to_shelf(shelf_num, cord, num):
 
 def draw_lines():
     global line_iterator, drawn_plan, draw_li
+    global cz_x, cz_y
     drawn_plan = plan_file.copy()
     draw_li = ImageDraw.Draw(drawn_plan)
 
     for i in range(len(list_of_navigation[line_iterator])-1):
+        if line_iterator > 0 and list_of_navigation[line_iterator - 1][-1] == list_of_navigation[line_iterator][-1] and list_of_navigation[line_iterator - 1][-2] == list_of_navigation[line_iterator][-2]:
+            break
+        if line_iterator > 0 and list_of_navigation[line_iterator - 1][-2] == list_of_navigation[line_iterator][-2]:
+              draw_line(draw_li, to_shelf(list_of_navigation[line_iterator-1][-1], list_of_navigation[line_iterator-1][-2], 1), to_shelf(
+                  list_of_navigation[line_iterator][-1], list_of_navigation[line_iterator][-2], 1))
+              break
         if i == 0 and len(list_of_navigation[line_iterator][i]) == 2:
             draw_line(draw_li, to_shelf(list_of_navigation[line_iterator][i], list_of_navigation[line_iterator][i+1], -1),
                       change_to_distance(list_of_navigation[line_iterator][i+1]))
             continue
         if len(list_of_navigation[line_iterator][i+1]) == 2:
-            draw_line(draw_li, to_shelf(list_of_navigation[line_iterator][i+1], list_of_navigation[line_iterator][i], 1),change_to_distance(list_of_navigation[line_iterator][i]))
+            draw_line(draw_li, to_shelf(
+                list_of_navigation[line_iterator][i+1], list_of_navigation[line_iterator][i], 1), change_to_distance(list_of_navigation[line_iterator][i]))
             continue
         draw_line(draw_li, change_to_distance(list_of_navigation[line_iterator][i]),
                   change_to_distance(list_of_navigation[line_iterator][i+1]))
 
-    if len(list_of_navigation[line_iterator][0]) == 2:
-        change_to_distance(list_of_navigation[line_iterator][1])
-        cz = to_shelf(list_of_navigation[line_iterator][0], list_of_navigation[line_iterator][1], -1)
-        av = int(list_of_navigation[line_iterator][1][1]) % 2
-        she = ((int(list_of_navigation[line_iterator][0]) % 8)+1)/2
-        x=0
-        y=0
-        if av == 0:
-            av = 1
-        else:
-            av = -1
+    if len(list_of_navigation[line_iterator][0]) == 2 and list_of_navigation[line_iterator-1][0] == list_of_navigation[line_iterator][0]:
+        worker_label.place(x=cz_x, y=cz_y)
     else:
-        x, y = change_to_distance(list_of_navigation[line_iterator][0])
-        av = 0
-        cz = [0, 0]
-    worker_label.place(x=(x+cz[0])/1.68 - 0, y=(y+cz[1])/1.65 + 10)
+        if len(list_of_navigation[line_iterator][0]) == 2:
+            #change_to_distance(list_of_navigation[line_iterator][1])
+            cz = to_shelf(list_of_navigation[line_iterator][0], list_of_navigation[line_iterator][1], -1)
+            x = 0
+            y = 0
+        else:
+            x, y = change_to_distance(list_of_navigation[line_iterator][0])
+            cz = [0, 0]
+        worker_label.place(x=(x+cz[0])/1.68, y=(y+cz[1])/1.65 + 10)
+        cz_x= (x+cz[0])/1.68
+        cz_y = y=(y+cz[1])/1.65 + 10
 
     global warehouse_plan
-    
-    text_var.set("Go to: H" + list_of_navigation[line_iterator][-2][0] + "0" + list_of_navigation[line_iterator][-2][1] + "A" + list_of_navigation[line_iterator][-1])
 
-    # Create a Label widget and associate it with the StringVar
+    text_var.set("Go to: H" + list_of_navigation[line_iterator][-2][0] + "0" +
+                 list_of_navigation[line_iterator][-2][1] + "A" + list_of_navigation[line_iterator][-1])
+
     text_label.config(textvariable=text_var)
     warehouse_plan = ImageTk.PhotoImage(drawn_plan.resize(
         (int(plan_width * k), int(plan_height * k))))
@@ -81,8 +87,8 @@ def draw_rectangle(draw, start, end, color="black"):
     if y0 > y1:
         y0, y1 = y1, y0
 
-    start = (x0, y0)
-    end = (x1, y1)
+    start = (x0*3/10, y0*3/10)
+    end = (x1*3/10, y1*3/10)
 
     draw.rectangle([start, end], fill=color)
 
@@ -94,12 +100,14 @@ def draw_rectangles():
     draw_re = ImageDraw.Draw(drawn_palet)
 
     for i in range(palet_iterator+1):
+        color = ["black", "yellow", "green", "blue",
+                 "pink", "orange", "cyan", "purple", "gray"]
         if i == palet_iterator:
             draw_rectangle(
                 draw_re, list_of_future_placing[i][0], list_of_future_placing[i][1], "red")
         else:
             draw_rectangle(
-                draw_re, list_of_future_placing[i][0], list_of_future_placing[i][1], "black")
+                draw_re, list_of_future_placing[i][0], list_of_future_placing[i][1], color[i % len(color)])
 
     global palet
     palet = ImageTk.PhotoImage(drawn_palet)
@@ -128,17 +136,15 @@ def change_to_distance(number):
             y = 24.65
     return (x*11+60, y*11 + 85)
 
-
+cz_x=0
+cz_y=0
 line_iterator = 0
 palet_iterator = 0
 
 list_of_navigation = route_tour
-list_of_future_placing = [['100', '143', '133', '123', '02'], ['02', '123', '122', '132', '09'],
-                          ['09', '132', '142', '152', '162', '172',
-                           '312', '322', '321', '223', '222', '14'],
-                          ['14', '222', '212', '213', '223',
-                           '321', '331', '332', '342', '10'],
-                          ['10', '342', '352', '362', '372', '512', '522', '532', '542', '500']]
+list_of_future_placing = [[(0, 0), (600, 800)],
+                          [(0, 0), (300, 400)],
+                          [(300, 0), (600, 400)]]
 list_of_past_placing = []
 
 
@@ -171,9 +177,9 @@ worker = ImageTk.PhotoImage(worker_file)
 worker_label = Label(image=worker, text="Worker")
 
 text_var = StringVar()
-text_var.set("Go to: H" + list_of_navigation[line_iterator][-2][0] + "0" + list_of_navigation[line_iterator][-2][1] + "A" + list_of_navigation[line_iterator][-1])
+text_var.set("Go to: H" + list_of_navigation[line_iterator][-2][0] + "0" +
+             list_of_navigation[line_iterator][-2][1] + "A" + list_of_navigation[line_iterator][-1])
 
-# Create a Label widget and associate it with the StringVar
 text_label = Label(root, textvariable=text_var, font=("Helvetica", 16))
 
 
@@ -181,6 +187,6 @@ warehouse_label.grid(column=0, rowspan=20)
 palet_label.grid(row=0, column=1)
 button_reached.grid(row=1, column=1)
 button_packed.grid(row=2, column=1)
-text_label.grid(row=3,column=1)
+text_label.grid(row=3, column=1)
 
 root.mainloop()
