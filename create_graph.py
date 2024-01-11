@@ -165,6 +165,7 @@ def calculate_shortest_path_weight(start_point, end_point):
     #print(f"The shortest path is: {shortest_path_string}")
 
     sum_of_weights = sum(shortest_path_weights)
+
     #print(f"Sum of weights along the shortest path: {sum_of_weights}")
     return sum_of_weights,shortest_path_ids
 
@@ -203,11 +204,11 @@ def travellingSalesmanProblem(list, s):
         list_ve.append(list_1)
         list_she.append(list_2)
 
-    for i in list_ve: 
+    for i in list: 
         if i != s:
             vertex.append(i)
  
-    # store minimum weight Hamiltonian Cycle 
+    # store minimum weight Hamiltonian Cycle
     min_path = maxsize
     route=[]
     next_permutation = permutations(vertex)
@@ -219,15 +220,47 @@ def travellingSalesmanProblem(list, s):
         curr_route=[]
         #compute current path weight 
         k = s
+        shelf_prev=""
+        path_from_shelf_w = 0
         for j in i:
-            path_weight,path_route = calculate_shortest_path_weight(k, j)
+            ver, shelf = j
+            
+            path_weight,path_route = calculate_shortest_path_weight(k, ver)
+            if shelf_prev != "":
+                path_route.insert(0, shelf_prev)
+            
+            #adding shelfs
+            if int(ver[2]) == 1 or int(ver[2]) == 3:
+                if int(shelf)<=8:
+                    path_weight += (0.75 + ((int(shelf)-1)/2)*3 + 1.5)
+                else:
+                    path_weight += (0.75 + ((int(shelf)-8-1)/2)*3 + 1.5)
+            else:
+                path_weight += (1.5 + ((int(shelf)-1)/2)*3 + 1.5)
             current_pathweight += path_weight
-            #current_pathweight += int(list_she)
-            curr_route.append(path_route)
-            k = j
+            current_pathweight += path_from_shelf_w
 
-        path_weight,path_route = calculate_shortest_path_weight(k,"500")
+            path_route.append(shelf)
+            curr_route.append(path_route)
+            k,shelf2 = j
+            shelf_prev=shelf
+
+            if (int(ver[2]) == 1 and int(ver[1])%2 != 0) or (int(ver[2]) == 3 and int(ver[1])%2 ==0):
+                if int(shelf)<=8:
+                    path_from_shelf_w += (12 - (0.75 + ((int(shelf)-1)/2)*3 + 1.5) + 1.5)
+                else:
+                    path_from_shelf_w += (12 - (0.75 + ((int(shelf)-8-1)/2)*3 + 1.5) + 1.5)
+            elif (int(ver[1])==2):
+                if int(shelf)<=8:
+                    path_from_shelf_w = (12- (1.5 +((int(shelf)-1)/2)*3 + 1.5) +0.75)
+                else:
+                    path_from_shelf_w = (12- (1.5 +((int(shelf)-8-1)/2)*3 + 1.5) +0.75)
+
+        ver, shelf = j
+        path_weight,path_route = calculate_shortest_path_weight(ver,"500")
+        path_route.insert(0, shelf_prev)
         current_pathweight += path_weight
+        current_pathweight += path_from_shelf_w
         curr_route.append(path_route)
  
         #update minimum
