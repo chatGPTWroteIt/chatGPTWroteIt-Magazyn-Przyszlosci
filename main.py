@@ -1,3 +1,5 @@
+from paletPacking.main import affordable_rows, transform
+
 import pandas as pd
 
 class Cuboid:
@@ -88,8 +90,8 @@ def package_order(raw_row, packages):
     pass
 
 
-def martyna(x,y):
-    return {((400, 6), (400, 0), (400, 0)): 0, ((400, 3), (400, 2), (400, 0)): 0, ((400, 0), (400, 4), (400, 0)): 5}
+def get_packages(x,y):
+    return
 
 
 
@@ -119,7 +121,8 @@ for i in range(1, 21):
 
             grouped_df = curr_df.groupby('y')['count'].sum()
             tuples = [(y, count) for y, count in grouped_df.items()]
-            row_packages = martyna(tuples,pallet.width)
+            row_packages = affordable_rows(df,pallet.width)
+            row_packages = transform(row_packages, tuples)
 
             print(row_packages)
             ordered_df = curr_df.sort_values(by=['Waga (kg)'], ascending=False)
