@@ -138,9 +138,23 @@ def create_g():
     g.add_edge("500","572")
     weight.append(lenght[4])
 
+    g.add_edge("543","500")
+    weight.append(lenght[3])
+    g.add_edge("542","500")
+    weight.append(lenght[4]*1.4)
+    g.add_edge("552","500")
+    weight.append(lenght[4])
+    g.add_edge("562","500")
+    weight.append(lenght[4])
+    g.add_edge("572","500")
+    weight.append(lenght[4])
+
     g.es['weight'] = weight     
 
 def calculate_shortest_path_weight(start_point, end_point):
+    if start_point == end_point:
+        return 0
+    
     shortest_path_indices = g.get_shortest_paths(g.vs.find(name=start_point), to=g.vs.find(name=end_point), output="vpath")[0]
     shortest_path_ids = [g.vs[idx]["name"] for idx in shortest_path_indices]
 
@@ -152,6 +166,7 @@ def calculate_shortest_path_weight(start_point, end_point):
 
     sum_of_weights = sum(shortest_path_weights)
     print(f"Sum of weights along the shortest path: {sum_of_weights}")
+    return shortest_path_string
 
 def convert_package_id(tabPackageId):
     vertex_list=[]
@@ -171,14 +186,68 @@ def convert_package_id(tabPackageId):
             else:
                 vertex_to_find = int(hall)*100 + int(alley)*10 + 2
         #print(vertex_to_find)
-        vertex_list.append(vertex_to_find)
-    
+        vertex_list.append((vertex_to_find,shelf))
     return vertex_list
-    
+
+
+from sys import maxsize 
+from itertools import permutations
+def travellingSalesmanProblem(list, s): 
+    # store all vertex apart from source vertex 
+
+    vertex = [] 
+    list_ve = [] 
+    list_she = [] 
+    for i in list:
+        list_1,list_2 = i
+        list_ve.append(list_1)
+        list_she.append(list_2)
+
+    for i in list_ve: 
+        if i != s:
+            vertex.append(i)
+ 
+    # store minimum weight Hamiltonian Cycle 
+    min_path = maxsize
+    route=[]
+    next_permutation = permutations(vertex)
+    for i in next_permutation:
+ 
+        #store current Path weight(cost)
+        current_pathweight = 0
+
+        curr_route=[]
+        #compute current path weight 
+        k = s
+        for j in i:
+            current_pathweight += calculate_shortest_path_weight(k, j)
+            #current_pathweight += int(list_she)
+            curr_route.append(j)
+            k = j
+
+        
+        
+        current_pathweight += calculate_shortest_path_weight(k, "500")
+        curr_route.append("500")
+ 
+        #update minimum
+        if current_pathweight<min_path:
+            min_path=current_pathweight
+            route=curr_route
+    return (min_path,route)
+
+
+def get_palette(package_list):
+    packages_Idshelf = convert_package_id(package_list)
+    travellingSalesmanProblem(packages_Idshelf,"100")
+    ################################### jak dalej palety?
     
 create_g()
 print(g)
 #print(g.es['weight'])
 calculate_shortest_path_weight("111","131")
 
-list = convert_package_id(["H102A02","H10309"])
+list = convert_package_id(["H102A02","H103A09"])
+
+for i in list:
+    print(i)
